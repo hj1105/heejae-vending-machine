@@ -257,26 +257,35 @@ classDiagram
 
 ### 자판기 상태 다이어그램
 ```mermaid
-stateDiagram-v2
-    [*] --> IDLE: 초기화
+flowchart TD
+    A([시작]) --> B[대기 상태\nIDLE]
     
-    IDLE --> ACCEPTING_MONEY: 현금 결제 선택
-    IDLE --> SELECTING_BEVERAGE: 카드 결제 선택
+    B -->|현금 결제 선택| C[현금 투입 상태\nACCEPTING_MONEY]
+    B -->|카드 결제 선택| D[음료 선택 상태\nSELECTING_BEVERAGE]
     
-    ACCEPTING_MONEY --> ACCEPTING_MONEY: 현금 추가 투입
-    ACCEPTING_MONEY --> SELECTING_BEVERAGE: 금액 충분
-    ACCEPTING_MONEY --> IDLE: 취소
+    C -->|음료 선택| E[결제 처리 상태\nPROCESSING_PAYMENT]
+    C -->|취소| B
+    C -->|추가 투입| C
     
-    SELECTING_BEVERAGE --> PROCESSING_PAYMENT: 음료 선택
+    D -->|음료 선택| E
+    D -->|취소| B
     
-    PROCESSING_PAYMENT --> DISPENSING_PRODUCT: 결제 성공
-    PROCESSING_PAYMENT --> ACCEPTING_MONEY: 현금 부족
-    PROCESSING_PAYMENT --> SELECTING_BEVERAGE: 카드 결제 실패
-    PROCESSING_PAYMENT --> ERROR: 처리 오류
+    E -->|결제 성공| F[음료 배출 상태\nDISPENSING_PRODUCT]
+    E -->|현금 부족| G[금액 부족 상태\nINSUFFICIENT_FUNDS]
+    E -->|카드 결제 실패| B
     
-    DISPENSING_PRODUCT --> IDLE: 음료 배출 완료
+    G -->|추가 투입| C
+    G -->|취소| B
     
-    ERROR --> IDLE: 오류 복구
+    F -->|완료| B
+    
+    %% 스타일 적용
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef active fill:#d4f1f9,stroke:#1a6e8e,stroke-width:2px;
+    classDef error fill:#ffe5e5,stroke:#cc0000,stroke-width:2px;
+    
+    class B,C,D,E,F default
+    class G error
 ```
 
 ## 3. 시스템 컴포넌트 구성
